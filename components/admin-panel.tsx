@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Trash2, UserPlus, Eye, EyeOff } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
 
 interface TournamentUser {
   id: string
@@ -35,8 +34,8 @@ export function AdminPanel({
       return
     }
 
-    if (newUserPassword.length < 6) {
-      alert("La contraseña debe tener al menos 6 caracteres")
+    if (newUserPassword.length < 8) {
+      alert("La contraseña debe tener al menos 8 caracteres")
       return
     }
 
@@ -80,12 +79,14 @@ export function AdminPanel({
     if (!confirm("¿Estás seguro de eliminar este usuario?")) return
 
     setLoading(true)
-    const supabase = createClient()
-
     try {
-      const { error } = await supabase.from("tournament_users").delete().eq("id", userId)
-
-      if (error) throw error
+      const response = await fetch(`/api/tournaments/${tournamentId}/users`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || "Error al eliminar usuario")
 
       setUsers(users.filter((u) => u.id !== userId))
       alert("Usuario eliminado correctamente")
@@ -136,7 +137,7 @@ export function AdminPanel({
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Mínimo 8 caracteres"
                 value={newUserPassword}
                 onChange={(e) => setNewUserPassword(e.target.value)}
                 className="bg-background/50 pr-10"

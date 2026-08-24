@@ -9,9 +9,10 @@ interface MatchReportPDFProps {
   match: any
   teamAPlayers: any[]
   teamBPlayers: any[]
+  className?: string
 }
 
-export function MatchReportPDF({ match, teamAPlayers, teamBPlayers }: MatchReportPDFProps) {
+export function MatchReportPDF({ match, teamAPlayers, teamBPlayers, className }: MatchReportPDFProps) {
   const handleDownloadPDF = () => {
     try {
       const doc = new jsPDF()
@@ -84,7 +85,7 @@ export function MatchReportPDF({ match, teamAPlayers, teamBPlayers }: MatchRepor
   }
 
   return (
-    <Button onClick={handleDownloadPDF} className="sport-gradient gap-2">
+    <Button type="button" variant="outline" onClick={handleDownloadPDF} className={className || "gap-2"}>
       <Download className="h-4 w-4" />
       Exportar PDF
     </Button>
